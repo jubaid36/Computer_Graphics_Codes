@@ -1,29 +1,53 @@
-#include <windows.h>
-#include <GL/glut.h>
+/*
+ * এই প্রোগ্রামটি OpenGL এবং GLUT ব্যবহার করে একটি সাদা ব্যাকগ্রাউন্ডে লাল রঙের একটি বর্গাকার (Square) অঙ্কন করে।
+ *
+ * - display() ফাংশনে প্রথমে ব্যাকগ্রাউন্ড কালো সেট করা হয় এবং 2D অরথোগ্রাফিক প্রজেকশন (-4 থেকে 4 পর্যন্ত) নির্ধারণ করা হয়।
+ * - এরপর একটি লাল রঙের বর্গ আঁকা হয়, যার চারটি ভেরটেক্স (-2,-2), (2,-2), (2,2), এবং (-2,2)।
+ * - glFlush() দিয়ে রেন্ডারিং সম্পন্ন করা হয়।
+ * 
+ * - main() ফাংশনে উইন্ডো তৈরি, সাইজ ও অবস্থান সেট করা হয় এবং display() ফাংশন রেন্ডার কলব্যাক হিসেবে সেট করা হয়।
+ * - এরপর GLUT এর প্রধান লুপ চালু করা হয়।
+ *
+ * এই প্রোগ্রামটি OpenGL-এর মাধ্যমে সহজ 2D আকৃতি আঁকার একটি মৌলিক উদাহরণ।
+ */
 
+ #include <windows.h>      // উইন্ডোজ সিস্টেম ফাংশনের জন্য
+#include <GL/glut.h>      // OpenGL Utility Toolkit (GLUT) লাইব্রেরি
+
+// ডিসপ্লে ফাংশন যা উইন্ডোতে ড্রয়িং করে
 void display() {
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  glOrtho(-4, 4, -4, 4, -4, 4);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT);  // স্ক্রীন পরিষ্কার করে পূর্ববর্তী আঁকা সব মুছে ফেলে
 
-  glBegin(GL_QUADS);
-  glColor3f(1.0f, 0.0f, 0.0f);
-  glVertex2f(-2.0f, -2.0f);
-  glVertex2f(2.0f, -2.0f);
-  glVertex2f(2.0f, 2.0f);
-  glVertex2f(-2.0f, 2.0f);
-  glEnd();
+  glBegin(GL_QUADS);             // ৪ কোণ বিশিষ্ট একটি আকৃতি (বর্গ) আঁকা শুরু
+  glColor3f(1.0f, 0.0f, 0.0f);  // রঙ সেট করা — লাল (R=1,G=0,B=0)
 
-  glFlush();
+  // চারটি কোণ নির্দিষ্ট করে বর্গের চার ভের্টেক্স
+  glVertex2f(-2.0f, -2.0f);  // বাম নিচে
+  glVertex2f(2.0f, -2.0f);   // ডান নিচে
+  glVertex2f(2.0f, 2.0f);    // ডান উপরে
+  glVertex2f(-2.0f, 2.0f);   // বাম উপরে
+
+  glEnd();                    // আকৃতির ড্রয়িং শেষ
+
+  glFlush();                  // সকল OpenGL কমান্ড সম্পন্ন করে রেন্ডার করে দেখায়
+}
+
+// ইনিশিয়ালাইজেশন ফাংশন - একবার মাত্র চালানো হয়
+void init() {
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);  // ব্যাকগ্রাউন্ড কালার কালো (RGBA)
+  glMatrixMode(GL_PROJECTION);            // প্রজেকশন ম্যাট্রিক্স সক্রিয় করা
+  glLoadIdentity();                       // ম্যাট্রিক্স রিসেট করা
+  glOrtho(-4, 4, -4, 4, -4, 4);          // ২D/৩D কো-অর্ডিনেট সিস্টেম সেট করা (-4 থেকে 4)
 }
 
 int main(int argc, char** argv) {
-  glutInit(&argc, argv);
-  glutCreateWindow("Simple Square");
-  glutInitWindowSize(320, 320);
-  glutInitWindowPosition(50, 50);
-  glutDisplayFunc(display);
-  glutMainLoop();
-
-  return 0;
+  glutInit(&argc, argv);                      // GLUT ইনিশিয়ালাইজ করা
+  glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB); // উইন্ডোর কালার মোড নির্ধারণ
+  glutInitWindowSize(320, 320);               // উইন্ডোর সাইজ নির্ধারণ
+  glutInitWindowPosition(50, 50);             // উইন্ডোর স্ক্রীনে অবস্থান
+  glutCreateWindow("Simple Square");          // উইন্ডো তৈরি এবং শিরোনাম দেওয়া
+  init();                                     // ওপেনজিএল সেটিংস ইনিশিয়ালাইজ করা
+  glutDisplayFunc(display);                    // ডিসপ্লে ফাংশন সেট করা
+  glutMainLoop();                             // ইভেন্ট লুপ শুরু, প্রোগ্রাম চলতে থাকবে
+  return 0;                                   // সফল সমাপ্তি
 }
